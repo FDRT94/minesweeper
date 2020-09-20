@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	let width = 10
 	let squares = []
 	let bombAmount = 20
+	let flags = 0
+	let isGameOver = false
 
 	//create board
 	function createBoard() {
@@ -20,14 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			grid.appendChild(square)
 			squares.push(square)
 
-		
+			//normal click
+			square.addEventListener('click', function (e) {
+				click(square)
+			})
 
-		//normal click
-		square.addEventListener('click', function(e) {
-			click(square)
-		})
-	}
-
+			// control + left click
+			square.oncontextmenu = function(e) {
+				e.preventDefault()
+				addFlag(square)
+			}
+		}
 
 		//add numbers
 		for (let i = 0; i < squares.length; i++) {
@@ -52,13 +57,100 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	createBoard()
 
-
-	//click
-
-	function click(square) {
-		if (square.classList.contains('bomb')) {
-			alert('Game Over')
-
+//add flag with right click
+function addFlag(square) {
+	if (isGameOver) return
+	if (!square.classList.contains('checked') && (flags < bombAmount)) {
+		if (!square.classList.contains('flag')) {
+			square.classList.add('flag')
+			square.innerHTML = ' 🚩 '
+			flags ++ 
+		} else {
+			square.classList.remove('flag')
+			square.innerHTML = ''
+			flags --
 		}
+	}
+}
+
+	//click on square actions
+	function click(square) {
+		let currentId = square.id
+		if (isGameOver) return
+		if (square.classList.contains('checked') || square.classList.contains('flag')) return
+		if (square.classList.contains('bomb')) {
+			console.log('Game Over')
+		} else {
+			let total = square.getAttribute('data')
+			if (total != 0) {
+				square.classList.add('checked')
+				square.innerHTML = total
+				return
+			}
+			checkSquare(square, currentId)
+		}
+		square.classList.add('checked')
+	}
+
+	// check neighboring squares once square is clicked
+	function checkSquare(square, currentId) {
+		const isLeftEdge = (currentId % width === 0)
+		const isRightEdge = (currentId % width === width - 1)
+
+		setTimeout(() => {
+			if (currentId > 0 && !isLeftEdge) {
+				const newId = squares[parseInt(currentId) - 1].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId > 9 && !isRightEdge) {
+				const newId = squares[parseInt(currentId) + 1 - width].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId > 10) {
+				const newId = squares[parseInt(currentId - width)].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId > 11 && !isLeftEdge) {
+				const newId = squares[parseInt(currentId) - 1 - width].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId < 98 && !isRightEdge) {
+				const newId = squares[parseInt(currentId) + 1].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId < 90 && !isLeftEdge) {
+				const newId = squares[parseInt(currentId) - 1 + width].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId < 88 && !isRightEdge) {
+				const newId = squares[parseInt(currentId) + 1 + width].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+			if (currentId < 89) {
+				const newId = squares[parseInt(currentId) + width].id
+				const newSquare = document.getElementById(newId)
+				click(newSquare)
+			}
+		}, 10)
+	}
+
+	//game Over
+	function gameOver(square) {
+		console.log('Get shit on')
+		isGameOver = true
+
+		//show all bombs
+		squares.forEach(square => {
+			if (square.classList.contains('bomb')) {
+				square.innerHTML = ' 💣 '
+			}
+		})
 	}
 })
