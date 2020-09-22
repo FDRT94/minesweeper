@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const grid = document.querySelector('.grid')
+	const flagsLeft = document.querySelector('#flags-left')
+	const result = document.querySelector('#result')
 	let width = 10
 	let squares = []
 	let bombAmount = 20
@@ -8,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	//create board
 	function createBoard() {
+
+		flagsLeft.innerHTML = bombAmount
+
 		// get shuffled game array with random bombs
 		const bombsArray = Array(bombAmount).fill('bomb')
 		const emptyArray = Array(width * width - bombAmount).fill('valid')
@@ -23,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			squares.push(square)
 
 			//normal click
-			square.addEventListener('click', function (e) {
+			square.addEventListener('click', function(e) {
 				click(square)
 			})
 
@@ -65,10 +70,13 @@ function addFlag(square) {
 			square.classList.add('flag')
 			square.innerHTML = ' 🚩 '
 			flags ++ 
+			flagsLeft.innerHTML = bombAmount- flags
+			checkForWin()
 		} else {
 			square.classList.remove('flag')
 			square.innerHTML = ''
 			flags --
+			flagsLeft.innerHTML = bombAmount- flags
 		}
 	}
 }
@@ -79,13 +87,20 @@ function addFlag(square) {
 		if (isGameOver) return
 		if (square.classList.contains('checked') || square.classList.contains('flag')) return
 		if (square.classList.contains('bomb')) {
-			console.log('Game Over')
+			gameOver(square)
 		} else {
 			let total = square.getAttribute('data')
 			if (total != 0) {
 				square.classList.add('checked')
 				square.innerHTML = total
+
+				if (total == 1) square.classList.add('one')
+        		if (total == 2) square.classList.add('two')
+        		if (total == 3) square.classList.add('three')
+				if (total == 4) square.classList.add('four')
+				
 				return
+
 			}
 			checkSquare(square, currentId)
 		}
@@ -143,6 +158,7 @@ function addFlag(square) {
 
 	//game Over
 	function gameOver(square) {
+		result.innerHTML = 'Get shit on'
 		console.log('Get shit on')
 		isGameOver = true
 
@@ -150,7 +166,26 @@ function addFlag(square) {
 		squares.forEach(square => {
 			if (square.classList.contains('bomb')) {
 				square.innerHTML = ' 💣 '
+				square.classList.remove('bomb')
+        		square.classList.add('checked')
 			}
 		})
+	}
+
+	// check for win
+	function checkForWin() {
+		// simplified win argument
+		let matches = 0
+
+		for (let i = 0;i < squares.length; i++) {
+			if (squares[i].classList.contains('flag') && squares[i].classList.contains('bomb')) {
+				matches ++
+			}
+
+			if (matches === bombAmount) {
+				result.innerHTML = 'You Win!'
+				isGameOver = true
+			}
+		}
 	}
 })

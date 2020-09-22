@@ -1,3 +1,8 @@
+.container {
+	width: 500px;
+	align-content: center;
+  }
+
 .grid {
 	height: 400px;
 	width: 400px;
@@ -6,15 +11,54 @@
 	background-color: grey;
 }
 
-.grid div {
+div {
 	height: 40px;
 	width: 40px;
 }
 
-.bomb {
-	background-color: orange;
-}
+.valid {
+  height: 40px;
+  width: 40px;
+  border: 5px solid;
+  border-color: #f5f3eb #bab7a9 #bab7a9 #fff9db;
+  box-sizing: border-box;
+}  
 
 .checked {
-	background-color: red;
+	height: 40px;
+	width: 40px;
+	border: 2px solid;
+	background-color: #cecab7;
+	border-color: #9c998d;
+	box-sizing: border-box;
+}
+
+.bomb {
+	height: 40px;
+	width: 40px;
+	border: 5px solid;
+	border-color: #f5f3eb #bab7a9 #bab7a9 #fff9db;
+	box-sizing: border-box;
+  }
+
+
+#result {
+	margin-top: 5px;
+	color: #e76346;
+  }
+
+.one {
+color: #e76346;
+}
+
+.two {
+color: #4199d3;
+}
+
+.three {
+color: #57da59;
+}
+
+.four{
+color: #bb41d3;
 }
